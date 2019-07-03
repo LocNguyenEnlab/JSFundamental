@@ -122,7 +122,7 @@ function changeSeats() {
         selectedSeats.push(btn);
         textBoxBookedSeats.innerHTML += (btn.id + " ");
         moneyTotal += 45000;
-        document.getElementById("money-total").textContent = moneyTotal.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString();
+        document.getElementById("money-total").textContent = moneyTotal.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString();
     } 
     else if (!bookedSeats[bookedSeatIndex]) {
         btn.style.backgroundColor = "#74e393";
@@ -133,7 +133,7 @@ function changeSeats() {
         bookedSeatName = bookedSeatName.replace(btn.id, "");
         textBoxBookedSeats.innerHTML = bookedSeatName;  
         moneyTotal -= 45000;
-        document.getElementById("money-total").textContent = moneyTotal.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString();
+        document.getElementById("money-total").textContent = moneyTotal.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString();
     }
 }
 
