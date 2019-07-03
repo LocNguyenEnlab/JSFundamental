@@ -41,10 +41,6 @@ function createSeats(data) {
 
 createSeats(seats);
 
-
-
-p = document.getElementById("date-time").innerHTML = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
-
 function bookTickets() {
     if (selectedSeats.length != 0) {
         var isConfirm = confirm("Are you sure to book tickets!");
@@ -92,7 +88,7 @@ function createTableHeadOfListBookedTickets(data) {
     }
 }
 
-createTableHeadOfListBookedTickets(bookedTickets); //Object.keys(tickets[0])
+createTableHeadOfListBookedTickets(bookedTickets);
 
 function createTableOfListBookedTickets(data) {
     var table = document.getElementById("list-booked-tickets");
@@ -106,7 +102,7 @@ function createTableOfListBookedTickets(data) {
             btnRemove.style.border = "none";
             btnRemove.style.backgroundColor = "white";
             btnRemove.id = "ticket" + (data.length - 1);
-            btnRemove.addEventListener('click', RemoveTicket);
+            btnRemove.addEventListener('click', removeTicket);
             cell.appendChild(btnRemove);
             break;
         }
@@ -126,7 +122,7 @@ function changeSeats() {
         selectedSeats.push(btn);
         textBoxBookedSeats.innerHTML += (btn.id + " ");
         moneyTotal += 45000;
-        document.getElementById("money-total").textContent = moneyTotal;
+        document.getElementById("money-total").textContent = moneyTotal.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString() + " vnd";
     } 
     else if (!bookedSeats[bookedSeatIndex]) {
         btn.style.backgroundColor = "#74e393";
@@ -137,11 +133,11 @@ function changeSeats() {
         bookedSeatName = bookedSeatName.replace(btn.id, "");
         textBoxBookedSeats.innerHTML = bookedSeatName;  
         moneyTotal -= 45000;
-        document.getElementById("money-total").textContent = moneyTotal;
+        document.getElementById("money-total").textContent = moneyTotal.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString() + " vnd";
     }
 }
 
-function RemoveTicket() {
+function removeTicket() {
     var isConfirm = confirm("Are you sure to remove this ticket!");
     if (isConfirm) {
         var rows = document.getElementById('list-booked-tickets').getElementsByTagName('tr');
