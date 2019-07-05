@@ -13,19 +13,19 @@ for (var i = 'A'; i < 'J'; i = String.fromCharCode(i.charCodeAt(0) + 1)) {
     }
 }
 
-function createSeats(data) {
+function createSeats(seats) {
     var table = document.getElementById("seats");
     var row = table.insertRow();
     var count = 1;
-    for (var element of data) {
+    for (var seat of seats) {
         if (count == 13) {
             var row = table.insertRow();
             count = 1;
         }
         var cell = row.insertCell();
         var btn = document.createElement("button");
-        btn.innerHTML = element;
-        btn.id = element;
+        btn.innerHTML = seat;
+        btn.id = seat;
         btn.style.width = '100%';
         btn.style.backgroundColor = '#74e393';
         btn.style.border = 'none';
@@ -42,13 +42,13 @@ function bookTickets() {
     if (selectedSeats.length != 0) {
         var isConfirm = confirm("Are you sure to book tickets!");
         if (isConfirm) {
-            var selectedLength = selectedSeats.length;
-        
-            for (var i = 0; i < selectedLength; i++) {
-                var seat = selectedSeats.pop();            
+
+            for (var seat of selectedSeats) {         
                 seat.style.backgroundColor = 'red';  
                 bookedSeats.push(seat);    
             }
+
+            selectedSeats = [];
             
             var ticket = {
                 MovieName: document.getElementById("movie-name").textContent, 
@@ -56,12 +56,12 @@ function bookTickets() {
                 SeatsNumber: document.getElementById("booked-seats").textContent,
                 BookedDatetime: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
                 TotalMoney: document.getElementById("money-total").textContent + " vnd",
-                Remove: "..."
+                RemoveId: "ticket" + bookedTickets.length
             };
 
             bookedTickets.push(ticket);
 
-            createTableOfListBookedTickets(bookedTickets);
+            createTableOfListBookedTickets(ticket);
 
             document.getElementById("booked-seats").innerHTML = "";
             document.getElementById("money-total").textContent = 0;
@@ -73,48 +73,47 @@ function bookTickets() {
     }
 }
 
-function createTableOfListBookedTickets(data) {
+function createTableOfListBookedTickets(ticket) {
     var table = document.getElementById("list-booked-tickets");
-    var element = data[data.length-1];
     var row = table.insertRow();    
-    for (key in element) {
+    for (var element in ticket) {
         var cell = row.insertCell();        
-        if (key === "Remove") {
+        if (element === "RemoveId") {
             var btnRemove = document.createElement("button");
             btnRemove.innerHTML = "x";
             btnRemove.style.border = "none";
             btnRemove.style.backgroundColor = "white";
-            btnRemove.id = "ticket" + (data.length - 1);
+            btnRemove.id = ticket[element];
             btnRemove.addEventListener('click', removeTicket);
             cell.appendChild(btnRemove);
             break;
         }
-        var text = document.createTextNode(element[key]);
+        var text = document.createTextNode(ticket[element]);
         cell.appendChild(text);        
     }
 }
 
 function changeSeats() {
-    var btn = document.getElementById(this.id);
-    var freeSeatIndex = freeSeats.findIndex(s=>s.id === btn.id, 1);
-    var bookedSeatIndex = bookedSeats.findIndex(s=>s.id === btn.id, 1);
+    var btnSeat = document.getElementById(this.id);
+    var freeSeatIndex = freeSeats.findIndex(s=>s.id === btnSeat.id); //findIndex return -1 if not found
+    var selectedSeatIndex = selectedSeats.findIndex(s=>s.id === btnSeat.id);
     var textBoxBookedSeats = document.getElementById("booked-seats");
-    if (freeSeats[freeSeatIndex]) {
-        btn.style.backgroundColor = "cyan";
+
+    if (freeSeatIndex != -1) {
+        btnSeat.style.backgroundColor = "cyan";
         freeSeats.splice(freeSeatIndex, 1);
-        selectedSeats.push(btn);
-        textBoxBookedSeats.innerHTML += (btn.id + " ");
+        selectedSeats.push(btnSeat);
+        textBoxBookedSeats.innerHTML += (btnSeat.id + " ");
         moneyTotal += 45000;
         document.getElementById("money-total").textContent = moneyTotal.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString();
     } 
-    else if (!bookedSeats[bookedSeatIndex]) {
-        btn.style.backgroundColor = "#74e393";
-        var selectedSeatIndex = selectedSeats.findIndex(s=>s.id === btn.id);
-        freeSeats.push(btn);
+    else if (selectedSeatIndex != -1) {
+        btnSeat.style.backgroundColor = "#74e393";
+        freeSeats.push(btnSeat);
         selectedSeats.splice(selectedSeatIndex, 1);
-        var bookedSeatName = textBoxBookedSeats.textContent;
-        bookedSeatName = bookedSeatName.replace(btn.id, "");
-        textBoxBookedSeats.innerHTML = bookedSeatName;  
+        var bookedSeatsName = textBoxBookedSeats.textContent;
+        bookedSeatsName = bookedSeatsName.replace(btnSeat.id, "");
+        textBoxBookedSeats.innerHTML = bookedSeatsName;  
         moneyTotal -= 45000;
         document.getElementById("money-total").textContent = moneyTotal.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,').toString();
     }
@@ -126,28 +125,21 @@ function removeTicket() {
         var rows = document.getElementById('list-booked-tickets').getElementsByTagName('tr');
         for (var i = 1; i < rows.length; i++) {
             if (rows[i].cells[5].childNodes[0].id === this.id) {
-                var timeBooked = rows[i].cells[3].childNodes[0].textContent;
-                var ticket = bookedTickets.find(s=>s.BookedDatetime === timeBooked);
+                //var timeBooked = rows[i].cells[3].childNodes[0].textContent;
+                var ticket = bookedTickets.find(s=>s.RemoveId === this.id);
                 var seats = ticket.SeatsNumber.split(" ");
-                for (seat of seats) {
-                    try {
-                        var seatIndex = bookedSeats.findIndex(s=>s.id === seat);
-                        bookedSeats.splice(seatIndex, 1);
-                        var btn = document.getElementById(seat);
-                        btn.style.backgroundColor = "#74e393";
-                        freeSeats.push(btn);
-                    }
-                    catch
-                    {
-
-                    }
+                for (var seat of seats) {
+                    if (seat === "")
+                        continue;
+                    var seatIndex = bookedSeats.findIndex(s=>s.id === seat);
+                    bookedSeats.splice(seatIndex, 1);
+                    var btn = document.getElementById(seat);
+                    btn.style.backgroundColor = "#74e393";
+                    freeSeats.push(btn);
                 }
                 document.getElementById('list-booked-tickets').deleteRow(i);            
                 break;
             }
-        }
-        for (var i = 0; i < bookedTickets.length; i++) {
-            var x = (bookedTickets[i])
         }
     }
 }
