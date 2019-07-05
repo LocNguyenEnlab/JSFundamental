@@ -1,12 +1,9 @@
-var seats = [ ]
+var seats = [];
 var freeSeats = [];
 var bookedSeats = [];
 var selectedSeats = [];
 var moneyTotal = 0;
-
-var bookedTickets = [
-    {MovieName: "Movie name", ShowTime: "Show time", SeatsNumber:"Seats number", BookedDatetime: "Booked Date time", TotalMoney: "Total money", Remove: "Remove"}
-]
+var bookedTickets = [];
 
 for (var i = 'A'; i < 'J'; i = String.fromCharCode(i.charCodeAt(0) + 1)) {
     var x;
@@ -53,12 +50,14 @@ function bookTickets() {
                 bookedSeats.push(seat);    
             }
             
-            var ticket = {MovieName: document.getElementById("movie-name").textContent, 
-            ShowTime: document.getElementById("show-time").textContent, 
-            SeatsNumber: document.getElementById("booked-seats").textContent,
-            BookedDatetime: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
-            TotalMoney: document.getElementById("money-total").textContent + " vnd",
-            Remove: "..."}
+            var ticket = {
+                MovieName: document.getElementById("movie-name").textContent, 
+                ShowTime: document.getElementById("show-time").textContent, 
+                SeatsNumber: document.getElementById("booked-seats").textContent,
+                BookedDatetime: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString(),
+                TotalMoney: document.getElementById("money-total").textContent + " vnd",
+                Remove: "..."
+            };
 
             bookedTickets.push(ticket);
 
@@ -73,22 +72,6 @@ function bookTickets() {
         alert("No seats selected!");
     }
 }
-
-function createTableHeadOfListBookedTickets(data) {
-    var table = document.getElementById("list-booked-tickets");
-    var thead = table.createTHead();
-    var row = thead.insertRow();
-    var element = data[0];
-    for (key in element) {
-        var th = document.createElement("th");
-        th.style.textAlign = "center";
-        var text = document.createTextNode(element[key]);
-        th.appendChild(text);
-        row.appendChild(th);
-    }
-}
-
-createTableHeadOfListBookedTickets(bookedTickets);
 
 function createTableOfListBookedTickets(data) {
     var table = document.getElementById("list-booked-tickets");
